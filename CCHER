@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>班表填寫</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, textarea { width: 100%; margin-bottom: 12px; padding: 8px; }
+    button { padding: 10px 16px; }
+  </style>
+</head>
+<body>
+  <h2>預約班表</h2>
+  <form id="form">
+    <input type="text" id="code" placeholder="CODE (員工編號)" required />
+    <input type="text" id="r" placeholder="R 預約日 (如 1 2 3)" />
+    <input type="text" id="d" placeholder="D 預約日" />
+    <input type="text" id="e" placeholder="E 預約日" />
+    <input type="text" id="n" placeholder="N 預約日" />
+    <input type="text" id="zz" placeholder="ZZ 預約日" />
+    <input type="text" id="end" placeholder="月底班別 (如 DDEERR)" />
+    <textarea id="note" placeholder="備註"></textarea>
+    <button type="submit">送出</button>
+  </form>
+
+  <script>
+    let userId = "";
+
+    async function main() {
+      await liff.init({ liffId: "2007428519-6ZRvbNnk" }); // 替換為你的 LIFF ID
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        const profile = await liff.getProfile();
+        userId = profile.userId;
+      }
+    }
+
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        userId,
+        code: document.getElementById("code").value.trim(),
+        r: document.getElementById("r").value,
+        d: document.getElementById("d").value,
+        e: document.getElementById("e").value,
+        n: document.getElementById("n").value,
+        zz: document.getElementById("zz").value,
+        end: document.getElementById("end").value,
+        note: document.getElementById("note").value,
+      };
+
+      await fetch("https://script.google.com/macros/s/AKfycbxQspU9j46BT2jfflq8UMcbZbyPJGTU6rw2HtlMdbv0uhgUV-f8gMqYvkpMCnym5fo9/exec", {  // 替換為你的 GAS 網址
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      alert("✅ 已送出！");
+      liff.closeWindow(); // 關閉 LIFF 視窗
+    });
+
+    main();
+  </script>
+</body>
+</html>
